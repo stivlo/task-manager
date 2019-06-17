@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        unique: true, // requires db drop!
+        unique: true, // drop + re-create db to update schema
         required: true,
         trim: true,
         lowercase: true,
