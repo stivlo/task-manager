@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
+        unique: true, // requires db drop!
         required: true,
         trim: true,
         lowercase: true,
@@ -41,6 +42,20 @@ const userSchema = new mongoose.Schema({
     }
 });
 
+userSchema.statics.findByCredentials = async (email, password) => {
+    const invalidLoginMessage = 'Invalid username or password';
+    const user = await User.findOne({ email });
+    if (!user) {
+        throw new Error(invalidLoginMessage);
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+        throw new Error(invalidLoginMessage);
+    }
+    return user;
+};
+
+// hash plain text password
 userSchema.pre('save', async function (next) {
     const user = this;
     if (user.isModified('password')) {
