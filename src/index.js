@@ -20,10 +20,10 @@ app.listen(port, () => {
 
 const Task = require('./models/task');
 const User = require('./models/user');
-const main = async () => {
-    const user = await User.findById('5d09511c7e0c670896f48c76');
-    await user.populate('tasks').execPopulate();
-    console.log(user.tasks);
+const main = async (message) => {
+    // const user = await User.findById('5d09511c7e0c670896f48c76');
+    // await user.populate('tasks').execPopulate();
+    // console.log(user.tasks);
 };
+ 
 
-main();
