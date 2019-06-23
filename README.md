@@ -2,7 +2,7 @@
 
 Example app to learn node JS.
 
-To run locally, create a file in `config/dev.env`.
+To run locally, create two configuration files `config/dev.env` and `config/test.env` for development and testing, respectively. The test environment should be configured to use a different mongodb database.
 A free SendGrid API key can be obtained at: https://sendgrid.com
 
 ```bash
