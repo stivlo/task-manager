@@ -5,6 +5,7 @@ const taskRouter = require('./routers/task');
 
 const app = express();
 
+app.disable('x-powered-by');
 app.use(express.json());
 app.use(userRouter);
 app.use(taskRouter);
