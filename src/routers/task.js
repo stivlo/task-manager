@@ -17,7 +17,7 @@ router.post('/tasks', auth, async (req, res) => {
     }
 });
 
-// find all tasks. GET /tasks?completed=true&limit=10&skip=0&sortBy=createdAt:desc
+// find all tasks for the authenticated user. GET /tasks?completed=true&limit=10&skip=0&sortBy=createdAt:desc
 router.get('/tasks', auth, async (req, res) => {
     const match = {};
     const sort = {};

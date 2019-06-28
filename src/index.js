@@ -1,6 +1,6 @@
 const app = require('./app');
 
-const port = process.env.port;
+const port = process.env.PORT;
 app.listen(port, () => {
     console.log('Task Manager App. Listening on port ' + port);
 });

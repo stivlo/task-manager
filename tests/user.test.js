@@ -1,24 +1,9 @@
 const request = require('supertest');
-const jwt = require('jsonwebtoken');
-const mongoose = require('mongoose');
 const app = require('../src/app');
 const User = require('../src/models/user');
+const { userOne, setupDatabase } = require('./fixtures/db');
 
-const userOneId = new mongoose.Types.ObjectId();
-const userOne = {
-    _id: userOneId,
-    name: 'Mike',
-    email: 'mike@example.com',
-    password: '83248What?',
-    tokens: [{
-        token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET)
-    }]
-};
-
-beforeEach(async () => {
-    await User.deleteMany();
-    await new User(userOne).save();
-});
+beforeEach(setupDatabase);
 
 test('Should sign up a new user', async () => {
     const response = await request(app).post('/users').send({
@@ -26,7 +11,7 @@ test('Should sign up a new user', async () => {
         email: 'andrew@example.com',
         password: 'Mypass7329!!'
     }).expect(201);
-    
+
     // check that the user was created in the database
     const user = await User.findById(response.body.user._id);
     expect(user).not.toBeNull();
@@ -50,8 +35,8 @@ test('Should log in existing user', async () => {
         email: userOne.email,
         password: userOne.password
     }).expect(200);
-    expect(response.body.user._id).toBe(userOneId.toHexString());
-    const user = await User.findById(userOneId);
+    expect(response.body.user._id).toBe(userOne._id.toHexString());
+    const user = await User.findById(userOne._id);
     expect(user.tokens[1].token).toBe(response.body.token);
 });
 
@@ -80,11 +65,11 @@ test('Should delete account for user', async () => {
         .send()
         .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
         .expect(200);
-    const user = await User.findById(userOneId);
+    const user = await User.findById(userOne._id);
     expect(user).toBeNull();
 });
 
-test('Should not delete account for unauthenticated user', async () => { 
+test('Should not delete account for unauthenticated user', async () => {
     await request(app).delete('/users/me')
         .send()
         .expect(401);
@@ -96,7 +81,7 @@ test('Should upload avatar image', async () => {
         .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
         .attach('avatar', 'tests/fixtures/profile-pic.jpg')
         .expect(200);
-    const user = await User.findById(userOneId);
+    const user = await User.findById(userOne._id);
     expect(user.avatar).toEqual(expect.any(Buffer));
 });
 
@@ -110,7 +95,7 @@ test('Should update valid user fields', async () => {
             email: 'mason@example.com'
         })
         .expect(200);
-    const user = await User.findById(userOneId);
+    const user = await User.findById(userOne._id);
     expect(user.name).toBe('Mason');
     expect(user.age).toBe(27);
     expect(user.email).toBe('mason@example.com');
